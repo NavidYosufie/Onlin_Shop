@@ -35,7 +35,7 @@ class ProductListView(ListView):
     context_object_name = 'product'
 
 
-class ProductDetailView(View):
+class ProductDetailCommentView(View):
 
     def get(self, request, pk):
         global product

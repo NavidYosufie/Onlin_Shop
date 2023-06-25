@@ -33,6 +33,7 @@ class ProductListView(ListView):
     model = Product
     template_name = 'product/shop.html'
     context_object_name = 'product'
+    paginate_by = 9
 
 
 class ProductDetailCommentView(View):
@@ -42,6 +43,7 @@ class ProductDetailCommentView(View):
         product = get_object_or_404(Product, id=pk)
         comment = Comment.objects.filter(active=True)
         form = CommentForm
+        global context
         context = {
             'product': product,
             'comment': comment,
@@ -52,16 +54,15 @@ class ProductDetailCommentView(View):
     def post(self, request, *args, **kwargs):
         comment = CommentForm(data=request.POST)
         user = request.user
+        print(comment['text'])
         if comment.is_valid():
             cd = comment.cleaned_data
             Comment.objects.create(product=product, user=user, text=cd['text'])
-            return redirect('/')
-
-
+        return render(request, 'product/product_detail.html', context)
 
 
 class CategoryProductListView(ListView):
     model = Product
     template_name = 'product/shop.html'
-    paginate_by = 2
+    paginate_by = 9
     context_object_name = 'product'

@@ -16,25 +16,6 @@ from django.views.generic import UpdateView, CreateView, FormView
 SMS = ghasedakpack.Ghasedak("16e061d580d3128b17f425aee0a4be090e5e7bfc11e3a02c9c80f1d6c5961e65")
 
 
-class LoginView(View):
-    def get(self, request):
-        form = LoginForm()
-        return render(request, "account/Login.html", {"form": form})
-
-    def post(self, request):
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(username=cd["username"], password=cd["password"])
-            if user is not None:
-                login(request, user)
-                return redirect("home:home")
-            else:
-                form.add_error("phone", "Your username or password is incorrect")
-
-        return render(request, 'account/Login.html', {"form": form})
-
-
 class OtpLoginView(View):
     def get(self, request):
         form = OtpLoginForm()

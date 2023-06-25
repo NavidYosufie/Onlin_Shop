@@ -72,6 +72,7 @@ TEMPLATES = [
                 'context_processrs.context_procssers.featured_product',
                 'context_processrs.context_procssers.featured_product_list',
                 'context_processrs.context_procssers.recent_product',
+                'context_processrs.context_procssers.number_product_user',
             ],
         },
     },

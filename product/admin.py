@@ -14,10 +14,10 @@ class CommentInline(admin.StackedInline):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("title", "price", 'image',)
-    list_filter = (['status'])
+    list_display = ("title", "price", 'status',)
+    list_filter = ('status', 'created_at')
     search_fields = ('title',)
-    inlines = (InformationAdmin, CommentInline)
+    inlines = (InformationAdmin, CommentInline,)
 
 
 

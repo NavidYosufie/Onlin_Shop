@@ -1,5 +1,5 @@
 from urllib import request
-
+from django.contrib.auth import authenticate
 from django import forms
 from .models import User, Otp, UserAddress, Profile
 from django.core.exceptions import ValidationError
@@ -65,6 +65,12 @@ class LoginForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Email or Phone"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Password"}))
 
+    def clean_username(self):
+        user = authenticate(username=self.cleaned_data.get('username'), password=self.cleaned_data.get('password'))
+        if user is not None:
+            return user
+        raise ValidationError("username or password is wrong")
+
 
 class OtpLoginForm(forms.Form):
     phone = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}))
@@ -84,7 +90,7 @@ class UserUpdateForm(forms.ModelForm):
             "email": forms.EmailInput(attrs={"class": "form-control"}),
         }
 
-    def clean_fields(self):
+    def clean_username(self):
         if User.objects.filter(username__iexact=self.cleaned_data.get("username")).exists():
             raise ValidationError("This username before exists", code="username_exists")
         return self.cleaned_data.get("username")

@@ -26,12 +26,10 @@ class OtpLoginView(View):
         if form.is_valid():
             cd = form.cleaned_data
             randcode = randint(1000, 9999)
-            template = f"for register to site code:{randcode}"
-            SMS.verification({'receptor': cd["phone"], 'type': '1', 'template': template, 'param1': randcode})
+            SMS.verification({'receptor': cd["phone"], 'type': '1', 'template': 'code', 'param1': randcode})
             token = str(uuid4())
             Otp.objects.create(phone=cd["phone"], code=randcode, token=token)
             print(randcode)
-
             return redirect(reverse("account:check_opt") + f"?token={token}")
 
         return render(request, "account/Register.html", {"form": form})

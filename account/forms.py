@@ -48,6 +48,7 @@ class UserChangeForm(forms.ModelForm):
 
 class AddressCreationForm(forms.ModelForm):
     user = forms.IntegerField(required=False)
+
     class Meta:
         model = UserAddress
         fields = '__all__'
@@ -60,24 +61,33 @@ class AddressCreationForm(forms.ModelForm):
         }
 
 
-
 class LoginForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Email or Phone"}))
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Username or Phone"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Password"}))
-
-    def clean_username(self):
-        user = authenticate(username=self.cleaned_data.get('username'), password=self.cleaned_data.get('password'))
-        if user is not None:
-            return user
-        raise ValidationError("username or password is wrong")
 
 
 class OtpLoginForm(forms.Form):
-    phone = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}))
+    phone = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
+                            validators=[validators.MaxLengthValidator(90), validators.MinLengthValidator(11)])
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Password"}),
+                                validators=[validators.MinLengthValidator(6)])
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Repeat password"}),
+        validators=[validators.MinLengthValidator(6)])
+
+    def clean_password1(self):
+        # Check that the two password entries match
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("Passwords don't match")
+        return password1
 
 
 class CheckOtpForm(forms.Form):
-    code = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Code"}), validators=[validators.MaxLengthValidator(4)])
+    code = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Code"}),
+                           validators=[validators.MaxLengthValidator(4)])
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -96,7 +106,6 @@ class UserUpdateForm(forms.ModelForm):
         return self.cleaned_data.get("username")
 
 
-
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
@@ -104,5 +113,3 @@ class ProfileUpdateForm(forms.ModelForm):
         widgets = {
             'image': forms.FileInput(attrs={"class": "form-control btn btn-info", 'value': 'select'}),
         }
-
-

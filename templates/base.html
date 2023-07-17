@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load render_partial %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +7,13 @@
 
 <body>
 
+<!-- Topbar Start -->
 {% include "includes/topbar.html" %}
+<!-- Topbar End -->
+
+<!-- Navbar Start -->
+{% render_partial 'product:navbar' %}
+<!-- Navbar End -->
 
 {% block main %}
 

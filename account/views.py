@@ -1,5 +1,4 @@
 from msilib.schema import ListView
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import User, Otp, Profile
@@ -11,15 +10,34 @@ from .forms import AddressCreationForm, LoginForm, OtpLoginForm, CheckOtpForm, U
 import ghasedakpack
 from random import randint
 from uuid import uuid4
-from django.views.generic import UpdateView, CreateView, FormView
 
 SMS = ghasedakpack.Ghasedak("16e061d580d3128b17f425aee0a4be090e5e7bfc11e3a02c9c80f1d6c5961e65")
 
 
-class OtpLoginView(View):
+# class LoginView(View):
+#     def get(self, request):
+#         form = LoginForm()
+#         return render(request, 'account/Login.html', {'form': form})
+#
+#     def post(self, request):
+#         form = LoginForm(data=request.POST)
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             user = authenticate(username=cd['username'], password=cd['password'])
+#             if user is not None:
+#                 login(request, user)
+#                 return redirect('/')
+#             else:
+#                 return form.add_error('password', 'invalid data')
+#         return render(request, 'account/Login.html', {'form': form})
+
+
+class OtpRegisterView(View):
     def get(self, request):
-        form = OtpLoginForm()
-        return render(request, "account/Register.html", {"form": form})
+        if not request.user.is_authenticated:
+            form = OtpLoginForm()
+            return render(request, "account/Register.html", {"form": form})
+        return redirect('/')
 
     def post(self, request):
         form = OtpLoginForm(data=request.POST)
@@ -28,7 +46,7 @@ class OtpLoginView(View):
             randcode = randint(1000, 9999)
             SMS.verification({'receptor': cd["phone"], 'type': '1', 'template': 'code', 'param1': randcode})
             token = str(uuid4())
-            Otp.objects.create(phone=cd["phone"], code=randcode, token=token)
+            Otp.objects.create(phone=cd["phone"], code=randcode, token=token, password=cd['password1'])
             print(randcode)
             return redirect(reverse("account:check_opt") + f"?token={token}")
 
@@ -36,10 +54,11 @@ class OtpLoginView(View):
 
 
 class CheckOtpView(View):
-
     def get(self, request):
-        form = CheckOtpForm()
-        return render(request, "account/check_otp.html", {"form": form})
+        if not request.user.is_authenticated:
+            form = CheckOtpForm()
+            return render(request, "account/check_otp.html", {"form": form})
+        return redirect('/')
 
     def post(self, request):
         token = request.GET.get('token')
@@ -52,7 +71,6 @@ class CheckOtpView(View):
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 otp.delete()
                 return redirect("product:home")
-
             else:
                 form.add_error("code", "This code is not valid")
 
@@ -92,7 +110,7 @@ class ProfileUpdateView(LoginRequiredMixin, View):
             u_form.save()
             p_form.save()
 
-            return redirect('account:profile_update') # Redirect back to profile page
+            return redirect('account:profile_update')  # Redirect back to profile page
         else:
             u_form = UserUpdateForm(instance=request.user)
             p_form = ProfileUpdateForm(instance=request.user.profile)

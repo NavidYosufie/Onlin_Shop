@@ -1,8 +1,11 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, FormView
 from django.views.generic.detail import DetailView, SingleObjectMixin
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import Product, Category, Comment
 from .forms import CommentForm
 
@@ -23,9 +26,8 @@ class ProductSearchView(ListView):
     context_object_name = 'product'
 
     def get_queryset(self):  # new
-        query = self.request.GET.get("q")
-        object_list = Product.objects.filter(title__icontains=query)
-        print(object_list)
+        queryset = self.request.GET.get("q")
+        object_list = Product.objects.filter(title__icontains=queryset)
         return object_list
 
 
@@ -61,8 +63,20 @@ class ProductDetailCommentView(View):
         return render(request, 'product/product_detail.html', context)
 
 
-class CategoryProductListView(ListView):
-    model = Product
-    template_name = 'product/shop.html'
-    paginate_by = 9
-    context_object_name = 'product'
+class Category_Ditael(View):
+    def get(self, request, slug):
+        page_number = request.GET.get("page")
+        category = get_object_or_404(Category, slug=slug)
+        product = category.product_set.all()
+        paginator = Paginator(product, 2)
+        object_list = paginator.get_page(page_number)
+        return render(request, "product/shop.html", {"product": object_list})
+
+
+class NavbarPartialView(TemplateView):
+    template_name = 'includes/navbar.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(NavbarPartialView, self).get_context_data()
+        context['categories'] = Category.objects.all()
+        return context

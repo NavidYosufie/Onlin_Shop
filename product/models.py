@@ -20,18 +20,17 @@ class Color(models.Model):
         return self.title
 
 class Category(models.Model):
-    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='children')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subs')
     title = models.CharField(max_length=100, null=True, blank=True)
     featured_title = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
     featured = models.BooleanField(default=False, null=True)
     created_at = models.DateTimeField(null=True, auto_now_add=True)
-    # slug = models.SlugField(null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True)
+
     def get_absolute_url(self):
-        return reverse("product:category_list", kwargs={"pk": self.id})
-    # def save(self):
-    #     self.slug = slugify(self.title)
-    #     super(Category, self).save()
+        return reverse("product:category_list", kwargs={"slug": self.slug})
+
     def __str__(self):
         return self.title
 
@@ -43,7 +42,7 @@ class Category(models.Model):
 class Product(models.Model):
     featured = models.BooleanField(default=False)
     title = models.CharField(max_length=100, blank=True, null=True)
-    category = models.ManyToManyField(Category, null=True, blank=True, related_name='categoris')
+    category = models.ManyToManyField(Category, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     price = models.IntegerField(null=True, blank=True)
     discount = models.SmallIntegerField(null=True, blank=True)

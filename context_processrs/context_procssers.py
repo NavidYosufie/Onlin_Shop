@@ -4,9 +4,9 @@ from cart.models import Order, OrderItem
 from product.models import Category, Product
 
 
-def cateqouries(request):
-    category = Category.objects.filter(parent=None)
-    return {"cateqouries": category}
+# def cateqouries(request):
+#     category = Category.objects.filter(parent=None)
+#     return {"cateqouries": category}
 
 def number_product_user(request):
     order = OrderItem.objects.all()

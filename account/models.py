@@ -80,6 +80,7 @@ class Otp(models.Model):
     token = models.CharField(max_length=32, null=True)
     phone = models.CharField(max_length=11)
     code = models.SmallIntegerField()
+    password = models.CharField(max_length=30, blank=None, null=True)
     expiation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

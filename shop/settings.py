@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'django_render_partial',
 
     'account.apps.AccountConfig',
     'product.apps.ProductConfig',
@@ -67,7 +69,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'context_processrs.context_procssers.cateqouries',
                 'context_processrs.context_procssers.featured_category',
                 'context_processrs.context_procssers.featured_product',
                 'context_processrs.context_procssers.featured_product_list',
@@ -139,13 +140,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend',
-                           'account.authentication.EmailAuthBackEnd']
+                           'account.authentication.EmailAuthBackend']
 
 
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379',
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379',
+#     }
+# }

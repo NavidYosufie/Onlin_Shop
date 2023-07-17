@@ -63,7 +63,7 @@ class ProductDetailCommentView(View):
         return render(request, 'product/product_detail.html', context)
 
 
-class Category_Ditael(View):
+class CategoryDetailView(View):
     def get(self, request, slug):
         page_number = request.GET.get("page")
         category = get_object_or_404(Category, slug=slug)

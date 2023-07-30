@@ -113,6 +113,7 @@ class ProfileUpdateView(LoginRequiredMixin, View):
                                    instance=request.user.profile)
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
+            p_form.save()
 
             return redirect('account:profile_update')  # Redirect back to profile page
         elif p_form.is_valid():

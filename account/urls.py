@@ -10,5 +10,4 @@ urlpatterns = [
     path("add/address", views.AddAddressView.as_view(), name="add_address"),
     path("profile", views.ProfileUpdateView.as_view(), name="profile_update"),
     path("logout", views.UserLogout.as_view(), name="user_logout"),
-    # path("chose-password", views.ChosePasswordView.as_view(), name="chose_password"),
 ]

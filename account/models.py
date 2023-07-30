@@ -1,5 +1,3 @@
-from django.utils.crypto import get_random_string
-from PIL import Image
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
@@ -34,6 +32,8 @@ class UserManager(BaseUserManager):
         user.is_admin = True
         user.save(using=self._db)
         return user
+    def __str__(self):
+        return self.model.username
 
 
 class User(AbstractBaseUser):
@@ -78,9 +78,11 @@ class User(AbstractBaseUser):
 
 class Otp(models.Model):
     token = models.CharField(max_length=32, null=True)
+    username = models.CharField(max_length=40, blank=True, null=True)
     phone = models.CharField(max_length=11)
     code = models.SmallIntegerField()
-    password = models.CharField(max_length=30, blank=None, null=True)
+    password1 = models.CharField(max_length=30, blank=None, null=True)
+    password2 = models.CharField(max_length=30, blank=None, null=True)
     expiation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -31,9 +31,13 @@ class ProductSearchView(ListView):
         return object_list
 
 
-class ProductListView(ListView):
-    template_name = 'product/products_list.html'
-    queryset = Product.objects.all()
+class ProductListView(ListView, View):
+    def get(self, request):
+        page_number = request.GET.get('page')
+        queryset = Product.objects.filter(status=True)
+        pagination = Paginator(queryset, 6)
+        object_list = pagination.get_page(page_number)
+        return render(request, 'product/products_list.html', {'object_list': object_list})
 
     def get_context_data(self, **kwargs):
         request = self.request

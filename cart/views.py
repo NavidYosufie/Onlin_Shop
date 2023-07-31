@@ -19,7 +19,6 @@ class CartDetailView(View):
 class CartAddView(View):
     def post(self, request, pk):
         product = get_object_or_404(Product, id=pk)
-        print(product.id)
         size, color, quantity = request.POST.get("size"), request.POST.get("color"), request.POST.get("quantity")
         cart = Cart(request)
         cart.add(product, quantity, color, size)

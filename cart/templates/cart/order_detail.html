@@ -63,7 +63,7 @@
                                         <option value="{{ address }}">{{ address }}</option>
                                     {% endfor %}
                                 </select>
-                                <a href="{% url "account:add_address" %}?next={% url "cart:order_detail" order.id %}"
+                                <a href="{% url "add_address" %}?next={% url "cart:order_detail" order.id %}"
                                    class="btn btn-block btn-primary font-weight-bold my-3 py-3">Add another addrees</a>
                                 {% if request.user.addresses.all %}
                                     <button type="submit" class="btn btn-block btn-success font-weight-bold my-3 py-3">

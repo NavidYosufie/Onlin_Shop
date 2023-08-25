@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from account.models import UserAddress
-from product.models import Product
-from .cart_module import Cart
 from .models import Order, OrderItem, DiscountCode
+from account.models import UserAddress
 from django.http import HttpResponse
+from product.models import Product
+from django.views import View
+from .cart_module import Cart
 import requests
 import json
 

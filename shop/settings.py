@@ -150,3 +150,8 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend',
 #         'LOCATION': 'redis://127.0.0.1:6379',
 #     }
 # }
+
+
+LOGIN_URL = 'user_login'
+LOGOUT_URL = 'user_logout'
+LOGIN_REDIRECT_URL = 'profile_update'

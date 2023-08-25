@@ -1,13 +1,13 @@
-from django.core.paginator import Paginator
+from django.views.generic import TemplateView, ListView
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
-from django.views import View
-from django.views.generic import TemplateView, ListView, UpdateView, CreateView, FormView
-from django.views.generic.detail import DetailView, SingleObjectMixin
-from rest_framework.response import Response
-from rest_framework.views import APIView
+
+from account.models import User
+from cart.cart_module import Cart
 from .models import Product, Category, Comment
+from django.core.paginator import Paginator
+from django.urls import reverse
 from .forms import CommentForm
+from django.views import View
 
 
 class HomeView(ListView):
@@ -31,13 +31,9 @@ class ProductSearchView(ListView):
         return object_list
 
 
-class ProductListView(ListView, View):
-    def get(self, request):
-        page_number = request.GET.get('page')
-        queryset = Product.objects.filter(status=True)
-        pagination = Paginator(queryset, 6)
-        object_list = pagination.get_page(page_number)
-        return render(request, 'product/products_list.html', {'object_list': object_list})
+class ProductListView(ListView):
+    template_name = 'product/products_list.html'
+    queryset = Product.objects.all()
 
     def get_context_data(self, **kwargs):
         request = self.request
@@ -58,6 +54,13 @@ class ProductListView(ListView, View):
         context = super(ProductListView, self).get_context_data()
         context['object_list'] = queryset
         return context
+
+    # def get(self, request):
+    #     page_number = request.GET.get('page')
+    #     queryset = Product.objects.filter(status=True)
+    #     pagination = Paginator(queryset, 6)
+    #     object_list = pagination.get_page(page_number)
+    #     return render(request, 'product/products_list.html', {'object_list': object_list})
 
 
 class ProductDetailCommentView(View):
@@ -90,12 +93,12 @@ class CategoryDetailView(View):
         page_number = request.GET.get("page")
         category = get_object_or_404(Category, slug=slug)
         product = category.product_set.all()
-        paginator = Paginator(product, 2)
+        paginator = Paginator(product, 6)
         object_list = paginator.get_page(page_number)
         return render(request, "product/products_list.html", {"object_list": object_list})
 
 
-class NavbarPartialView(TemplateView):
+class NavbarPartialView(TemplateView, View):
     template_name = 'includes/navbar.html'
 
     def get_context_data(self, **kwargs):

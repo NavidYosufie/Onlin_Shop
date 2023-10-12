@@ -108,14 +108,10 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-    # def save(self, *args, **kwargs):
-    #     # save the profile first
-    #     super().save(*args, **kwargs)
-    #
-    #     # resize the image
-    #     img = Image.open(self.image.path)
-    #     output_size = (500, 500)
-    #     # create a thumbnail
-    #     img.thumbnail(output_size)
-    #     # overwrite the larger image
-    #     img.save(self.image.path)
+class ContactUs(models.Model):
+    name = models.CharField(max_length=50)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    def __str__(self):
+        return self.subject

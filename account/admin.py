@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .forms import UserCreationForm, UserChangeForm
-from account.models import User, Otp, UserAddress, Profile
+from account.models import User, Otp, UserAddress, Profile, ContactUs
 
 
 class UserAdmin(BaseUserAdmin):
@@ -37,6 +37,7 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(UserAddress)
 admin.site.register(Profile)
+admin.site.register(ContactUs)
 
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)

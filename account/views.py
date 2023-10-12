@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import User, Otp, Profile
+from .models import User, Otp, Profile, ContactUs
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
-from .forms import AddressCreationForm, LoginForm, OtpLoginForm, CheckOtpForm, UserUpdateForm, ProfileUpdateForm
+from .forms import AddressCreationForm, LoginForm, OtpLoginForm, CheckOtpForm, UserUpdateForm, ProfileUpdateForm, \
+    ContactUsForm
 import ghasedakpack
 from random import randint
 from uuid import uuid4
@@ -134,6 +135,18 @@ class ProfileUpdateView(LoginRequiredMixin, View):
             'profile_form': p_form
         }
         return render(request, 'account/profile.html', context)
+
+
+class ContactView(View):
+    def get(self, request):
+        form = ContactUsForm()
+        return render(request, 'account/contact.html', {'form': form})
+    def post(self, request):
+        form = ContactUsForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            ContactUs.objects.create(name=cd.get("name"), email=cd.get('email'), subject=cd.get('subject'), message=cd.get('message'))
+            return render(request, 'account/contact.html')
 
 
 class UserLogout(View):

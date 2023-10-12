@@ -1,7 +1,7 @@
 from urllib import request
 from django.contrib.auth import authenticate
 from django import forms
-from .models import User, Otp, UserAddress, Profile
+from .models import User, Otp, UserAddress, Profile, ContactUs
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core import validators
@@ -122,4 +122,15 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['image']
         widgets = {
             'image': forms.FileInput(attrs={"class": "form-control btn btn-info", 'value': 'select'}),
+        }
+
+class ContactUsForm(forms.ModelForm):
+    class Meta:
+        model = ContactUs
+        fields = ['name', 'email', 'subject', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'name'}),
+            'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'email'}),
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'subject'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'message'})
         }

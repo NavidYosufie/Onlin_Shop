@@ -11,6 +11,13 @@
             <div class=" mb-5 contact-us" style="">
                 <div class="contact-form bg-light p-30">
                     <div id="success"></div>
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li class="alert alert-success" style="transition: 0.3s">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                     <form name="sentMessage" id="contactForm" method="post">
                         {% csrf_token %}
                         <div class="control-group">
@@ -27,11 +34,11 @@
                         <p></p>
                         <div class="control-group">
                             {{ form.message }}
-                        <div>
-                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Send
-                                Message
-                            </button>
-                        </div>
+                            <div>
+                                <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Send
+                                    Message
+                                </button>
+                            </div>
                     </form>
                 </div>
             </div>

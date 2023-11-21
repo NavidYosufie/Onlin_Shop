@@ -1,11 +1,7 @@
 from django.views.generic import TemplateView, ListView
-from django.shortcuts import render, get_object_or_404, redirect
-
-from account.models import User
-from cart.cart_module import Cart
+from django.shortcuts import render, get_object_or_404
 from .models import Product, Category, Comment
 from django.core.paginator import Paginator
-from django.urls import reverse
 from .forms import CommentForm
 from django.views import View
 
@@ -21,19 +17,29 @@ class HomeView(ListView):
 
 
 class ProductSearchView(ListView):
+    paginate_by = 6
     model = Product
     template_name = 'product/products_list.html'
-    context_object_name = 'product'
 
-    def get_queryset(self):  # new
-        queryset = self.request.GET.get("q")
-        object_list = Product.objects.filter(title__icontains=queryset)
-        return object_list
+    def get_context_data(self, **kwargs):
+        request = self.request
+        search = request.GET.get('q')
+        product = Product.objects.filter(title__iexact=search)
+        context = super(ProductSearchView, self).get_context_data()
+        paginator = Paginator(product, self.paginate_by)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context['object_list'] = page_obj
+        context['paginator'] = paginator
+        context['page_obj'] = page_obj
+        return context
 
 
 class ProductListView(ListView):
+    model = Product
     template_name = 'product/products_list.html'
-    queryset = Product.objects.all()
+    paginate_by = 6
 
     def get_context_data(self, **kwargs):
         request = self.request
@@ -42,6 +48,7 @@ class ProductListView(ListView):
         min_price = request.GET.get('min_price')
         max_price = request.GET.get('max_price')
         queryset = Product.objects.all()
+
         if colors:
             queryset = queryset.filter(color__title__in=colors).distinct()
 
@@ -51,16 +58,15 @@ class ProductListView(ListView):
         if min_price and max_price:
             queryset = queryset.filter(price__lte=max_price, price__gte=min_price)
 
-        context = super(ProductListView, self).get_context_data()
-        context['object_list'] = queryset
-        return context
+        paginator = Paginator(queryset, self.paginate_by)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
-    # def get(self, request):
-    #     page_number = request.GET.get('page')
-    #     queryset = Product.objects.filter(status=True)
-    #     pagination = Paginator(queryset, 6)
-    #     object_list = pagination.get_page(page_number)
-    #     return render(request, 'product/products_list.html', {'object_list': object_list})
+        context = super(ProductListView, self).get_context_data()
+        context['object_list'] = page_obj
+        context['paginator'] = paginator
+        context['page_obj'] = page_obj
+        return context
 
 
 class ProductDetailCommentView(View):
@@ -95,6 +101,7 @@ class CategoryDetailView(View):
         product = category.product_set.all()
         paginator = Paginator(product, 6)
         object_list = paginator.get_page(page_number)
+
         return render(request, "product/products_list.html", {"object_list": object_list})
 
 

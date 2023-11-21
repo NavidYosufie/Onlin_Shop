@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+
 from .models import Order, OrderItem, DiscountCode
-from account.models import UserAddress
+from account.models import UserAddress, User
 from django.http import HttpResponse
 from product.models import Product
 from django.views import View
@@ -40,6 +42,13 @@ class OrderCreationView(LoginRequiredMixin, View):
                                      quantity=item['quantity'], price=item['price'])
         cart.remove_cart()
         return redirect('cart:order_detail', order.id)
+
+class CartItemDetailView(TemplateView):
+    template_name = 'includes/navbar.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart_item'] = OrderItem.objects.all()
+
 
 
 class ApplyDiscountView(LoginRequiredMixin, View):

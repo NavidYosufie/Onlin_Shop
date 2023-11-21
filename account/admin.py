@@ -35,9 +35,13 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('phone',)
     filter_horizontal = ()
 
+@admin.register(ContactUs)
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'status_see')
+
+
 admin.site.register(UserAddress)
 admin.site.register(Profile)
-admin.site.register(ContactUs)
 
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)

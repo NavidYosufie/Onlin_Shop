@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views import View
 from .forms import AddressCreationForm, LoginForm, OtpLoginForm, CheckOtpForm, UserUpdateForm, ProfileUpdateForm, \
     ContactUsForm
+from django.contrib import messages
 import ghasedakpack
 from random import randint
 from uuid import uuid4
@@ -48,7 +49,7 @@ class OtpRegisterView(View):
             Otp.objects.create(phone=cd["phone"], username=cd['username'], password1=cd['password1'],
                                code=randcode, token=token)
             print(randcode)
-            return redirect(reverse("account:check_opt") + f"?token={token}")
+            return redirect(reverse("check_opt") + f"?token={token}")
 
         return render(request, "account/Register.html", {"form": form})
 
@@ -137,7 +138,8 @@ class ProfileUpdateView(LoginRequiredMixin, View):
         return render(request, 'account/profile.html', context)
 
 
-class ContactView(View):
+class ContactUsView(View):
+    success_message = 'send'
     def get(self, request):
         form = ContactUsForm()
         return render(request, 'account/contact.html', {'form': form})
@@ -146,7 +148,9 @@ class ContactView(View):
         if form.is_valid():
             cd = form.cleaned_data
             ContactUs.objects.create(name=cd.get("name"), email=cd.get('email'), subject=cd.get('subject'), message=cd.get('message'))
-            return render(request, 'account/contact.html')
+            messages.add_message(request, messages.SUCCESS, 'Your message has been sent')
+            form = ContactUsForm()
+            return render(request, 'account/contact.html', {'form': form})
 
 
 class UserLogout(View):

@@ -89,9 +89,11 @@ class OtpLoginForm(forms.Form):
         return self.cleaned_data.get('username')
 
     def clean_password1(self):
-        if self.cleaned_data.get('password1') != self.cleaned_data.get('password2'):
-            raise ValidationError('Your password is not the same')
-        return self.cleaned_data.get('password1')
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 != password2:
+            return ValidationError('your password is not same')
+        return password1
 
 
 

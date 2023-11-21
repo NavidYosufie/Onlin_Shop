@@ -8,6 +8,7 @@ class Order(models.Model):
     total_price = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     is_paid = models.BooleanField(default=False)
+    status = models.BooleanField(default=False)
     address = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -16,7 +17,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='item')
     size = models.CharField(max_length=12)
     color = models.CharField(max_length=12)
     quantity = models.SmallIntegerField(default=0)

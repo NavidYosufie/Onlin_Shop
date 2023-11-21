@@ -8,7 +8,7 @@ class OrderItemAdmin(admin.TabularInline):
 
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("user", 'is_paid')
+    list_display = ("user", 'is_paid', 'status')
     inlines = (OrderItemAdmin,)
     list_filter = ('is_paid',)
 

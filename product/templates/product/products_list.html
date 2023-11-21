@@ -8,8 +8,8 @@
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
-                    <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
+                    <a class="breadcrumb-item text-dark" href="{% url 'product:home' %}">Home</a>
+                    <a class="breadcrumb-item text-dark" href="{% url 'product:product_list' %}">Shop</a>
                     <span class="breadcrumb-item active">Shop List</span>
                 </nav>
             </div>
@@ -30,7 +30,7 @@
                     <form>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <label for="price-all">Min</label>
-                            <input  type="number" name="min_price" id="min_price">
+                            <input type="number" name="min_price" id="min_price">
                         </div>
 
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
@@ -45,10 +45,13 @@
                 </h5>
                 <div class="bg-light p-4 mb-30">
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input name="color" value="black" type="checkbox" class="custom-control-input" id="color-1">
+                        <input name="color" value="black" type="checkbox"
+                                {% if request.resolver_match.url_name == 'products?color=black' %}
+                               checked {% endif %}class="custom-control-input" id="color-1">
                         <label class="custom-control-label" for="color-1">Black</label>
                         <span class="badge border font-weight-normal">150</span>
                     </div>
+
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                         <input name="color" value="white" type="checkbox" class="custom-control-input" id="color-2">
                         <label class="custom-control-label" for="color-2">White</label>
@@ -59,6 +62,7 @@
                         <label class="custom-control-label" for="color-3">Red</label>
                         <span class="badge border font-weight-normal">246</span>
                     </div>
+
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                         <input name="color" value="blue" type="checkbox" class="custom-control-input" id="color-4">
                         <label class="custom-control-label" for="color-4">Blue</label>
@@ -76,7 +80,8 @@
                 </h5>
                 <div class="bg-light p-4 mb-30">
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input  name="size" value="xs" type="checkbox" class="custom-control-input"  {% if 'xs' in request  %} checked {% endif %} id="size-1">
+                        <input name="size" value="xs" type="checkbox" class="custom-control-input"
+                                {% if 'xs' in request %} checked {% endif %} id="size-1">
                         <label class="custom-control-label" for="size-1">XS</label>
                         <span class="badge border font-weight-normal">150</span>
                     </div>
@@ -149,8 +154,8 @@
                             <div class="product-item bg-light mb-4">
                                 <div class="product-img position-relative overflow-hidden">
                                     <a href="{{ pro.get_absolut_url }}"><img class="img-fluid w-100"
-                                                                                 src="{{ pro.image.url }}"
-                                                                                 alt=""></a>
+                                                                             src="{{ pro.image.url }}"
+                                                                             alt=""></a>
                                     <div class="product-action">
                                         <a class="btn btn-outline-dark btn-square" href=""><i
                                                 class="fa fa-shopping-cart"></i></a>
@@ -175,41 +180,35 @@
                     {% endfor %}
                     <div class="col-12">
                         <nav>
-                            {% if object_list.has_other_pages %}
-                                <ul class="pagination justify-content-center">
-                                    {% if object_list.has_previous %}
-                                        <a class="page-link"
-                                           href="?page={{ page_obj.previous_page_number }}">Previous</span></a>
+                            <div class="col-12">
+                                <nav>
+                                    {% if page_obj.paginator.num_pages > 1 %}
+                                        <ul class="pagination justify-content-center">
+                                            {% if page_obj.has_previous %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% for i in page_obj.paginator.page_range %}
+                                                <li class="page-item{% if page_obj.number == i %} active{% endif %}">
+                                                    <a class="page-link" href="?page=
+                                                            {{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a>
+                                                </li>
+                                            {% endfor %}
+
+                                            {% if page_obj.has_next %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
                                     {% endif %}
-
-                                    {% for i in object_list.paginator.page_range %}
-                                        {% if object_list.number == i %}
-                                            <li class="page-item active"><a class="page-link" href="?page=
+                                </nav>
+                            </div>
 
 
-
-
-
-                                                    {{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item"><a class="page-link" href="?page=
-
-
-
-
-
-                                                    {{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a>
-                                            </li>
-
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {% if object_list.has_next %}
-                                        <a class="page-link" href="?page={{ object_list.next_page_number }}">Next</a>
-                                    {% endif %}
-                                </ul>
-                            {% endif %}
                         </nav>
                     </div>
                 </div>

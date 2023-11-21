@@ -1,7 +1,7 @@
 from urllib import request
 from django.contrib.auth import authenticate
 from django import forms
-from .models import User, Otp, UserAddress, Profile, ContactUs
+from .models import User, Otp, UserAddress, Profile, ContactUs, OtpRestPassword
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core import validators
@@ -96,10 +96,35 @@ class OtpLoginForm(forms.Form):
         return password1
 
 
-
 class CheckOtpForm(forms.Form):
     code = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Code"}),
                            validators=[validators.MaxLengthValidator(4)])
+
+
+class RestPasswordForm(forms.Form):
+    username = forms.CharField(widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}))
+
+
+class OtpRestPasswordForm(forms.Form):
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Now password'}))
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Repeat password'}))
+    code = forms.CharField(widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Code'}))
+
+    def clean_code(self):
+        code = self.cleaned_data.get('code')
+        if OtpRestPassword.objects.filter(code=code).exists():
+            return code
+        raise ValidationError('This code is wrong', code='ctp_password_code')
+
+    def clean_password2(self):
+
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("Passwords don't match")
+        return password1
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -125,6 +150,7 @@ class ProfileUpdateForm(forms.ModelForm):
         widgets = {
             'image': forms.FileInput(attrs={"class": "form-control btn btn-info", 'value': 'select'}),
         }
+
 
 class ContactUsForm(forms.ModelForm):
     class Meta:

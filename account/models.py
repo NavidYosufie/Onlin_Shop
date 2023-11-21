@@ -88,6 +88,12 @@ class Otp(models.Model):
     def __str__(self):
         return self.phone
 
+class OtpRestPassword(models.Model):
+    username = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    code = models.CharField(max_length=6, blank=True, null=True)
+    token = models.CharField(max_length=32, blank=True, null=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
 
 class UserAddress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')

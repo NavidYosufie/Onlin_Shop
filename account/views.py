@@ -1,11 +1,14 @@
+from datetime import timedelta
+from django.utils import timezone
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import User, Otp, Profile, ContactUs
+from .models import User, Otp, Profile, ContactUs, OtpRestPassword
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from .forms import AddressCreationForm, LoginForm, OtpLoginForm, CheckOtpForm, UserUpdateForm, ProfileUpdateForm, \
-    ContactUsForm
+    ContactUsForm, RestPasswordForm, OtpRestPasswordForm
 from django.contrib import messages
 import ghasedakpack
 from random import randint
@@ -79,9 +82,55 @@ class CheckOtpView(View):
 
         return render(request, "account/check_otp.html", {"form": form})
 
+
 class RestPasswordView(View):
     def get(self, request):
-        pass
+        form = RestPasswordForm()
+        return render(request, "account/rest_password_form.html", {"form": form})
+
+    def post(self, request):
+        form = RestPasswordForm(data=request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            randcode = randint(1000, 9999)
+            SMS.verification({'receptor': cd["username"], 'type': '1', 'template': 'code', 'param1': randcode})
+            token = str(uuid4())
+            otp = OtpRestPassword.objects.create(username=cd["username"], phone=cd["username"], code=randcode,
+                                                 token=token,
+                                                 expires_at=timezone.now() + timedelta(minutes=15))
+            print(randcode)
+            return redirect(reverse("otp_rest_password") + f"?token={token}")
+
+        return render(request, "account/rest_password_form.html", {"form": form})
+
+
+class OtpRestPasswordView(View):
+    def get(self, request):
+        token = request.GET.get('token')
+        form = OtpRestPasswordForm()
+        return render(request, "account/otp_rest_password.html", {"form": form, "token": token})
+
+    def post(self, request):
+
+        token = request.GET.get('token')
+        form = OtpRestPasswordForm(data=request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            otp = OtpRestPassword.objects.filter(code=cd["code"], token=token).first()
+            if otp is not None:
+                if otp.expires_at >= timezone.now():
+                    user = User.objects.get(phone=otp.phone)
+                    user.set_password(cd['password1'])
+                    user.save()
+                    login(request, user, backend='django.contrib.auth.backend.ModelBackend')
+                    return redirect("user_login")
+                else:
+                    return render(request, "account/otp_rest_password.html",
+                                  {"form": form, "token": token, "error_message": "کد OTP منقضی شده است."})
+            else:
+                return render(request, "account/otp_rest_password.html",
+                              {"form": form, "token": token, "error_message": "کد OTP اشتباه است."})
+        return render(request, "account/otp_rest_password.html", {"form": form, "token": token})
 
 
 class AddAddressView(View):
@@ -140,14 +189,17 @@ class ProfileUpdateView(LoginRequiredMixin, View):
 
 class ContactUsView(View):
     success_message = 'send'
+
     def get(self, request):
         form = ContactUsForm()
         return render(request, 'account/contact.html', {'form': form})
+
     def post(self, request):
         form = ContactUsForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            ContactUs.objects.create(name=cd.get("name"), email=cd.get('email'), subject=cd.get('subject'), message=cd.get('message'))
+            ContactUs.objects.create(name=cd.get("name"), email=cd.get('email'), subject=cd.get('subject'),
+                                     message=cd.get('message'))
             messages.add_message(request, messages.SUCCESS, 'Your message has been sent')
             form = ContactUsForm()
             return render(request, 'account/contact.html', {'form': form})

@@ -41,6 +41,7 @@
                             <a href="{% url 'product:home' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'home' %} active {% endif %}">Home</a>
                             <a href="{% url 'product:product_list' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'product_list' %} active {% endif %}">Shop</a>
                             <a href="{% url 'contactus' %}" class="nav-item nav-link">Contact</a>
+                        <button class="btn btn-danger" onclick="warning()">Warning</button>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                             <a href="{% url 'cart:cart_detail' %}" class="btn px-0 ml-3">

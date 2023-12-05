@@ -55,8 +55,8 @@
                             <h5>Total</h5>
                             <h5>${{ order.total_price }}</h5>
                         </div>
-                        <form method="post" action="{% url "cart:send_request" order.id %}">
-                            {% csrf_token %}
+{#                        <form method="get">#}
+{#                            {% csrf_token %}#}
                             {% if request.user.addresses.all %}
                                 <select name="address" class="form-control" aria-label="Default select example">
                                     {% for address in request.user.addresses.all %}
@@ -66,12 +66,10 @@
                                 <a href="{% url "add_address" %}?next={% url "cart:order_detail" order.id %}"
                                    class="btn btn-block btn-primary font-weight-bold my-3 py-3">Add another addrees</a>
                                 {% if request.user.addresses.all %}
-                                    <button type="submit" class="btn btn-block btn-success font-weight-bold my-3 py-3">
-                                        Pay
-                                    </button>
+                                    <button onclick="warning()" class="btn btn-block btn-success font-weight-bold my-3 py-3">Pay</button>
                                 {% endif %}
                             {% endif %}
-                        </form>
+{#                        </form>#}
                         {% if not request.user.addresses.all.get.address %}
                             <a href="{% url "account:add_address" %}?next={% url "cart:order_detail" order.id %}"
                                class="btn btn-block btn-primary font-weight-bold my-3 py-3">You dont have any

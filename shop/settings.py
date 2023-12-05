@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'shop.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# https://docs.djangoproject.com/en/4.1/ref/settings/databases
 
 DATABASES = {
     'default': {
@@ -91,6 +91,17 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'OPTION': {
+#             'NAME': 'websbs_mystore',
+#             'USERNAME': 'websbs_naviddev',
+#             'PASSWORD': 'HackerNNDD7995'
+#         }
+#     }
+# }
 
 
 # Password validation
